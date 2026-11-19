@@ -1,10 +1,15 @@
 generator client {
   provider = "prisma-client-js"
+  // "native" for local dev; rhel-openssl-3.0.x for Netlify/AWS Lambda functions.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Pooled connection used by the running app (Supabase: transaction pooler, port 6543).
+  url       = env("DATABASE_URL")
+  // Direct connection used for migrations (Supabase: session pooler, port 5432).
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------- Admin users ----------

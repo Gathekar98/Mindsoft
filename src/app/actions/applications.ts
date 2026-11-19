@@ -61,7 +61,7 @@ export async function submitApplication(_prev: FormState, formData: FormData): P
 
   let key: string | null = null;
   try {
-    key = await saveResume(resume.buf, resume.ext);
+    key = await saveResume(resume.buf, resume.ext, resume.mime);
     const app = await db.application.create({
       data: {
         ...data,

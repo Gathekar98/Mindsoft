@@ -4,14 +4,36 @@ import { mkdir, readFile, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 
 /**
- * Private resume storage on local disk, outside /public.
- * Files are only readable through the authenticated admin download route.
+ * Private resume storage.
  *
- * For serverless hosting (e.g. Vercel) replace these three functions with an
- * S3-compatible bucket (AWS S3, Cloudflare R2) using private objects and
- * short-lived signed URLs. The rest of the app only uses the storage key.
+ * - Production (Netlify/serverless): a PRIVATE Supabase Storage bucket, used when
+ *   SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set. Files are never public;
+ *   the server downloads them with the secret key for signed-in HR/Admin users.
+ * - Local development: files on disk in UPLOAD_DIR (outside /public).
+ *
+ * The rest of the app only deals with the storage key.
  */
 const ROOT = path.resolve(process.env.UPLOAD_DIR ?? "./storage/resumes");
+
+const SUPABASE_URL = process.env.SUPABASE_URL?.replace(/\/+$/, "");
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const BUCKET = process.env.SUPABASE_RESUME_BUCKET || "resumes";
+const useSupabase = Boolean(SUPABASE_URL && SUPABASE_KEY);
+
+function supabaseHeaders(extra: Record<string, string> = {}) {
+  const key = SUPABASE_KEY!;
+  // New-style secret keys (sb_secret_…) go in `apikey`; legacy service_role JWTs also as Bearer.
+  return {
+    apikey: key,
+    ...(key.startsWith("eyJ") ? { Authorization: `Bearer ${key}` } : {}),
+    ...extra,
+  };
+}
+
+function objectUrl(key: string) {
+  if (!/^[\w\-/.]+$/.test(key) || key.includes("..")) throw new Error("Invalid storage key");
+  return `${SUPABASE_URL}/storage/v1/object/${encodeURIComponent(BUCKET)}/${key}`;
+}
 
 export const RESUME_MAX_BYTES = 5 * 1024 * 1024;
 
@@ -41,9 +63,20 @@ export function detectResumeType(buf: Buffer, originalName: string) {
   return match;
 }
 
-export async function saveResume(buf: Buffer, ext: string) {
+export async function saveResume(buf: Buffer, ext: string, mime: string) {
   const now = new Date();
   const key = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, "0")}/${randomUUID()}.${ext}`;
+
+  if (useSupabase) {
+    const res = await fetch(objectUrl(key), {
+      method: "POST",
+      headers: supabaseHeaders({ "Content-Type": mime, "x-upsert": "false" }),
+      body: new Uint8Array(buf),
+    });
+    if (!res.ok) throw new Error(`Resume upload failed (${res.status}): ${(await res.text()).slice(0, 200)}`);
+    return key;
+  }
+
   const full = path.join(ROOT, key);
   await mkdir(path.dirname(full), { recursive: true });
   await writeFile(full, buf, { flag: "wx" });
@@ -56,11 +89,24 @@ function safePath(key: string) {
   return full;
 }
 
-export async function readResume(key: string) {
+export async function readResume(key: string): Promise<Buffer> {
+  if (useSupabase) {
+    const res = await fetch(objectUrl(key), { headers: supabaseHeaders(), cache: "no-store" });
+    if (!res.ok) throw new Error(`Resume download failed (${res.status})`);
+    return Buffer.from(await res.arrayBuffer());
+  }
   return readFile(safePath(key));
 }
 
 export async function deleteResume(key: string) {
+  if (useSupabase) {
+    await fetch(`${SUPABASE_URL}/storage/v1/object/${encodeURIComponent(BUCKET)}`, {
+      method: "DELETE",
+      headers: supabaseHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ prefixes: [key] }),
+    }).catch(() => undefined);
+    return;
+  }
   await unlink(safePath(key)).catch(() => undefined);
 }
 

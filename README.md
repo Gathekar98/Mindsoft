@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mindsoft Tech Solutions — website
 
-## Getting Started
+Marketing site, lead capture, careers and admin dashboard for Mindsoft Tech Solutions (Pune, Maharashtra, India).
 
-First, run the development server:
+**Stack:** Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · PostgreSQL · Prisma 6 · Zod · signed-cookie admin sessions (jose + bcrypt).
+
+## Quick start (local)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env        # then fill SESSION_SECRET, IP_HASH_SALT, SEED_ADMIN_PASSWORD
+npm run db:start            # terminal 1: local Postgres on :5433 (no install needed)
+npm run db:migrate          # terminal 2: create tables
+npm run db:seed             # first admin user + 4 draft vacancies
+npm run dev                 # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run db:start` uses the `embedded-postgres` package to run a real PostgreSQL 17 server from `./.pgdata`. It is for development only.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+prisma/              schema.prisma, migrations, seed.ts
+scripts/db.ts        local dev database
+src/app/(site)/      public pages (header/footer layout)
+src/app/actions/     server actions: leads (contact/quote), applications (careers)
+src/components/      site/ (header, footer, art, FAQ…), forms/
+src/lib/             site config, services content, validation, auth, storage, security
+src/middleware.ts    protects /admin
+public/images/       photos (Unsplash License)
+```
 
-## Learn More
+## Content you must confirm before launch
 
-To learn more about Next.js, take a look at the following resources:
+Search the code for `[CONFIRM` — contact details, response-time promise, availability badge, budget bands, job salary/stipend details. Company details live in `src/lib/site.ts`; service copy lives in `src/lib/services.ts`. Vacancies are seeded as **DRAFT** and stay hidden until published in the admin panel.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Forms: server-side Zod validation, honeypot field, per-IP rate limiting (IP stored only as a salted hash), optional Cloudflare Turnstile, explicit privacy consent.
+- Resumes: max 5 MB, type checked from file bytes (PDF/DOC/DOCX), stored outside `public/` and only downloadable by signed-in HR/Admin users.
+- Admin: httpOnly signed session cookie, role checks (ADMIN, HR, SALES, EDITOR) on every page and action, `noindex` headers.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create a managed Postgres database (Neon, Supabase, AWS RDS…) and set `DATABASE_URL` (with `sslmode=require`).
+2. Set all variables from `.env.example` in your host. Use long random values for `SESSION_SECRET` and `IP_HASH_SALT`.
+3. Run `npm run db:deploy` then `npm run db:seed` once.
+4. **Resume storage:** on a VPS/Docker host, point `UPLOAD_DIR` to a persistent private volume. On serverless hosts (Vercel), replace the functions in `src/lib/storage.ts` with a private S3/R2 bucket — local disk there is not persistent.
+5. Rate limiting is in-memory; with multiple instances, switch `src/lib/security.ts` to Redis/Upstash.
+6. Configure SMTP variables to receive email alerts for new leads and applications (optional — everything is saved to the database either way).

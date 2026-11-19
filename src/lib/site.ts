@@ -13,9 +13,9 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   location: "Pune, Maharashtra, India",
   // --- Placeholders: confirm before launch ---
-  email: "[CONFIRM: hello@yourdomain.com]",
-  phone: "[CONFIRM: +91 phone]",
-  whatsapp: "", // digits only with country code, e.g. "919800000000". Empty hides WhatsApp links.
+  email: "ashwinigathekar2704@gmail.com",
+  phone: "+91 96576 77950",
+  whatsapp: "919657677950", // digits only with country code, e.g. "919800000000". Empty hides WhatsApp links.
   bookingUrl: "", // e.g. a Calendly link. Empty sends visitors to /quote instead.
   responseTime: "[CONFIRM: 1 business day]",
   availability: "[CONFIRM: month year]",

@@ -15,7 +15,8 @@ import path from "node:path";
  */
 const ROOT = path.resolve(process.env.UPLOAD_DIR ?? "./storage/resumes");
 
-const SUPABASE_URL = process.env.SUPABASE_URL?.replace(/\/+$/, "");
+// Accept "https://xxx.supabase.co" or a copied API URL like ".../rest/v1/".
+const SUPABASE_URL = process.env.SUPABASE_URL ? new URL(process.env.SUPABASE_URL).origin : undefined;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BUCKET = process.env.SUPABASE_RESUME_BUCKET || "resumes";
 const useSupabase = Boolean(SUPABASE_URL && SUPABASE_KEY);

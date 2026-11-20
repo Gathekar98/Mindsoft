@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { RotatingWord } from "@/components/site/RotatingWord";
-import { DeviceArt, GlobeRing, ServiceArt, WorkspaceArt, categoryBg } from "@/components/site/Art";
+import { DeviceArt, GlobeRing, WorkspaceArt } from "@/components/site/Art";
 import { Faq } from "@/components/site/Faq";
+import { ImageCard } from "@/components/site/ImageCard";
 import { LeadForm } from "@/components/forms/LeadForm";
-import { categories, servicesByCategory, type ServiceCategoryId } from "@/lib/services";
+import { categories, serviceLabel, servicesByCategory, type ServiceCategoryId } from "@/lib/services";
+import { industries, industrySpans } from "@/lib/industries";
 import { generalFaqs } from "@/lib/faqs";
 import { site, whatsappLink } from "@/lib/site";
 
@@ -19,16 +21,6 @@ const tech = [
 ];
 
 const catIds = Object.keys(categories) as ServiceCategoryId[];
-
-const industries = [
-  { name: "Retail & E-commerce", bg: "bg-sky", color: "#0A5C91", d: "M4 9l2-5h12l2 5M4 9h16v11H4zM9 20v-6h6v6" },
-  { name: "Healthcare & Clinics", bg: "bg-coral-soft", color: "#B3471F", d: "M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" },
-  { name: "Real Estate", bg: "bg-sky", color: "#0A5C91", d: "M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5" },
-  { name: "Education", bg: "bg-mint-soft", color: "#167A55", d: "M3 8l9-4 9 4-9 4zM7 10v5c3 2 7 2 10 0v-5" },
-  { name: "Finance & Services", bg: "bg-sky", color: "#0A5C91", d: "M3 20h18M6 20V10M10 20V6M14 20v-8M18 20V4" },
-  { name: "Logistics", bg: "bg-sun-soft", color: "#8A5A00", d: "M3 17h2l2-6h8l2 6h4M7 17a2 2 0 1 0 4 0M15 17a2 2 0 1 0 4 0" },
-  { name: "Startups & SaaS", bg: "bg-sky", color: "#0A5C91", d: "M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.8 7.1 18.2 8 12.7 4 8.8l5.5-.8z" },
-];
 
 export default function HomePage() {
   const wa = whatsappLink();
@@ -47,8 +39,7 @@ export default function HomePage() {
               Now taking new projects · {site.availability}
             </span>
             <h1 className="animate-rise font-display text-[40px] leading-[1.08] font-extrabold tracking-[-0.02em] [animation-delay:.12s] sm:text-[52px] xl:text-[60px]">
-              We build <RotatingWord words={["websites", "web apps", "custom software", "smart automations"]} />
-              <br />
+              We build <RotatingWord words={["websites", "web apps", "software", "automations"]} />
               that move your business forward.
             </h1>
             <p className="max-w-[560px] animate-rise text-lg leading-relaxed text-slate [animation-delay:.24s]">
@@ -116,33 +107,19 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {catIds.map((id) => (
-              <Link key={id} href={`/services#${id}`} className="card-lift reveal flex flex-col overflow-hidden rounded-[22px] bg-white shadow-[var(--shadow-card)]">
-                <div className={`relative h-[170px] ${categoryBg[id]}`}>
-                  {id === "engineering" ? (
-                    <>
-                      <Image src="/images/developers-coding.jpg" alt="" fill sizes="(max-width:640px) 100vw, 300px" className="object-cover" />
-                      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(12,18,45,0.15),rgba(10,92,145,0.5))]" />
-                      <div className="absolute right-2.5 bottom-2 h-[75px] w-[132px] animate-bob">
-                        <ServiceArt id="engineering" />
-                      </div>
-                    </>
-                  ) : (
-                    <ServiceArt id={id} />
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col gap-3 p-6">
-                  <h3 className="font-display text-xl font-bold">{categories[id].name}</h3>
-                  <ul className="flex flex-col gap-1.5 text-sm text-[#3A4460]">
-                    {servicesByCategory(id).map((s) => (
-                      <li key={s.slug}>· {s.name}</li>
-                    ))}
-                  </ul>
-                  <span className="mt-auto text-sm font-semibold text-ocean">
-                    Explore <span className="arrow">→</span>
-                  </span>
-                </div>
-              </Link>
+            {catIds.map((id, i) => (
+              <ImageCard
+                key={id}
+                href={`/services#${id}`}
+                image={categories[id].image}
+                icon={categories[id].icon}
+                number={`0${i + 1}`}
+                title={categories[id].name}
+                text={categories[id].blurb}
+                tags={servicesByCategory(id).map((s) => serviceLabel(s.slug))}
+                cta={`${servicesByCategory(id).length} services`}
+                className="min-h-[480px]"
+              />
             ))}
           </div>
         </div>
@@ -220,13 +197,21 @@ export default function HomePage() {
           </div>
           <Link href="/industries" className="font-semibold text-ocean">All industries →</Link>
         </div>
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
-          {industries.map((ind) => (
-            <li key={ind.name} className={`card-lift reveal flex flex-col gap-8 rounded-[20px] p-6 ${ind.bg}`}>
-              <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true">
-                <path d={ind.d} fill="none" stroke={ind.color} strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-              </svg>
-              <span className="font-semibold">{ind.name}</span>
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {industries.map((ind, i) => (
+            <li key={ind.slug} className={`flex ${industrySpans[i]}`}>
+              <ImageCard
+                href={`/services/${ind.service}`}
+                image={ind.image}
+                icon={ind.icon}
+                number={String(i + 1).padStart(2, "0")}
+                title={ind.name}
+                text={ind.blurb}
+                tags={ind.tags}
+                cta="See how we help"
+                className="w-full"
+                sizes={industrySpans[i] ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
+              />
             </li>
           ))}
         </ul>

@@ -18,7 +18,7 @@ export function RotatingWord({ words, interval = 2400 }: { words: string[]; inte
   return (
     <>
       <span className="sr-only">{words.join(", ")}</span>
-      <span aria-hidden="true" className="inline-block overflow-hidden pb-1 align-bottom">
+      <span aria-hidden="true" className="block overflow-hidden pb-1 whitespace-nowrap">
         <span key={i} className="text-gradient inline-block animate-word">
           {words[i]}
         </span>

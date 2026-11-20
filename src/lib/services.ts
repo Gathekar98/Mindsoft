@@ -14,22 +14,34 @@ export interface Service {
   faqs: { q: string; a: string }[];
 }
 
-export const categories: Record<ServiceCategoryId, { name: string; blurb: string }> = {
+export const categories: Record<ServiceCategoryId, { name: string; blurb: string; image: string; icon: string; tags: string[] }> = {
   web: {
     name: "Design & Web Presence",
     blurb: "Websites, online stores and interface design that turn visitors into enquiries.",
+    image: "/images/svc-web.jpg",
+    icon: "M3 4h18v14H3zM8 21h8M12 18v3",
+    tags: ["Websites", "E-commerce", "UI/UX"],
   },
   engineering: {
     name: "Product Engineering",
     blurb: "Custom web applications and software, from first version to full platform.",
+    image: "/images/developers-coding.jpg",
+    icon: "M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16",
+    tags: ["React & Next.js", "Python", "Full-stack"],
   },
   systems: {
     name: "Systems, Data & AI",
     blurb: "Databases, integrations, CRM/ERP and automation that remove manual work.",
+    image: "/images/svc-systems.jpg",
+    icon: "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
+    tags: ["Databases", "APIs", "CRM/ERP", "AI"],
   },
   cloud: {
     name: "Cloud, Care & Growth",
     blurb: "Hosting, maintenance, speed and SEO that keep your product healthy and found.",
+    image: "/images/svc-cloud.jpg",
+    icon: "M7 18a4 4 0 0 1-.6-8A6 6 0 0 1 18 8.5 4.5 4.5 0 0 1 17.5 18z",
+    tags: ["Cloud", "Maintenance", "SEO"],
   },
 };
 
@@ -557,6 +569,30 @@ export const services: Service[] = [
     ],
   },
 ];
+
+/** Short labels for tags and chips. */
+const shortLabels: Record<string, string> = {
+  "business-website-development": "Business Websites",
+  "corporate-website-development": "Corporate Websites",
+  "ecommerce-development": "E-commerce",
+  "ui-ux-design": "UI/UX Design",
+  "custom-web-application-development": "Web Apps",
+  "react-nextjs-development": "React & Next.js",
+  "python-backend-development": "Python Backend",
+  "full-stack-development": "Full-stack",
+  "custom-software-development": "Custom Software",
+  "database-development-integration": "Databases",
+  "api-development-integrations": "APIs",
+  "crm-erp-solutions": "CRM / ERP",
+  "automation-ai-integrations": "Automation & AI",
+  "cloud-hosting-deployment": "Cloud & Hosting",
+  "website-maintenance-support": "Maintenance",
+  "seo-performance-optimization": "SEO & Speed",
+};
+
+export function serviceLabel(slug: string) {
+  return shortLabels[slug] ?? getService(slug)?.name ?? slug;
+}
 
 export function getService(slug: string) {
   return services.find((s) => s.slug === slug);

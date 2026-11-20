@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { CtaBand, PageHero, SectionHead } from "@/components/site/PageHero";
-import { ServiceArt, categoryBg } from "@/components/site/Art";
 import { categories, servicesByCategory, type ServiceCategoryId } from "@/lib/services";
 
 export const metadata: Metadata = {
@@ -41,11 +41,25 @@ export default function ServicesPage() {
         <section key={id} id={id} className={`scroll-mt-28 ${idx % 2 ? "bg-mist" : ""}`}>
           <div className="container-ms grid gap-10 py-20 lg:grid-cols-[1fr_2fr]">
             <div className="reveal flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start">
-              <div className={`h-[180px] overflow-hidden rounded-[22px] ${categoryBg[id]}`}>
-                <ServiceArt id={id} />
+              <div className="group relative isolate flex h-[320px] flex-col justify-between overflow-hidden rounded-[24px] p-6 text-white shadow-[0_24px_50px_rgba(12,18,45,0.18)]">
+                <Image src={categories[id].image} alt="" fill sizes="(max-width:1024px) 100vw, 400px" className="-z-30 object-cover transition-transform duration-[1200ms] group-hover:scale-110" />
+                <span aria-hidden="true" className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,rgba(7,11,31,0.2)_0%,rgba(7,11,31,0.45)_45%,rgba(7,11,31,0.92)_100%)]" />
+                <span aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(10,92,145,0.55),transparent_65%)]" />
+                <span className="flex items-start justify-between">
+                  <span className="font-display text-sm font-bold tracking-widest text-white/80">0{idx + 1} · SERVICE AREA</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/25 bg-white/15 backdrop-blur-md" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24"><path d={categories[id].icon} fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
+                </span>
+                <span className="flex flex-col gap-3">
+                  <h2 className="font-display text-[28px] leading-tight font-extrabold">{categories[id].name}</h2>
+                  <span className="flex flex-wrap gap-1.5">
+                    {categories[id].tags.map((t) => (
+                      <span key={t} className="rounded-full border border-white/20 bg-white/14 px-2.5 py-1 text-xs font-medium backdrop-blur-sm">{t}</span>
+                    ))}
+                  </span>
+                </span>
               </div>
-              <p className="eyebrow">0{idx + 1} · Service area</p>
-              <h2 className="font-display text-[30px] leading-tight font-extrabold">{categories[id].name}</h2>
               <p className="text-slate">{categories[id].blurb}</p>
             </div>
             <ul className="grid gap-5 sm:grid-cols-2">

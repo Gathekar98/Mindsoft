@@ -25,7 +25,10 @@ export const budgetOptions = [
   "Not sure yet",
 ] as const; // [CONFIRM: budget bands]
 
-export const timelineOptions = ["As soon as possible", "Within a month", "1–3 months", "Just exploring"] as const;
+export const experienceOptions = ["Fresher", "Less than 1 year", "1–2 years", "3–5 years", "6–9 years", "10+ years"] as const;
+export const noticeOptions = ["Immediately", "Within 15 days", "30 days", "60 days", "90 days or more"] as const;
+
+export const timelineOptions =["As soon as possible", "Within a month", "1–3 months", "Just exploring"] as const;
 
 export const leadSchema = z
   .object({
@@ -56,7 +59,10 @@ export const applicationSchema = z.object({
   phone,
   location: trimmed(120).min(2, "Please enter your city"),
   education: trimmed(300).min(2, "Please enter your highest qualification"),
-  experience: trimmed(300).min(1, "Tell us your experience (write 'Fresher' if none)"),
+  experience: z.enum(experienceOptions, { errorMap: () => ({ message: "Choose your experience" }) }),
+  noticePeriod: z.enum(noticeOptions, { errorMap: () => ({ message: "Choose your notice period" }) }),
+  currentCompany: trimmed(150).optional().transform((v) => v || undefined),
+  expectedSalary: trimmed(80).optional().transform((v) => v || undefined),
   skills: trimmed(500).min(2, "List your key skills"),
   portfolioUrl: optionalUrl,
   githubUrl: optionalUrl,

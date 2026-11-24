@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState, useId, useState } from "react";
 import { submitApplication } from "@/app/actions/applications";
-import type { FormState } from "@/lib/validation";
+import { experienceOptions, noticeOptions, type FormState } from "@/lib/validation";
 
 const initial: FormState = { status: "idle" };
 const MAX = 4 * 1024 * 1024;
@@ -56,6 +56,25 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
     </div>
   );
 
+  const select = (name: string, label: string, options: readonly string[]) => (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id(name)} className="label">{label}</label>
+      <select
+        id={id(name)}
+        name={name}
+        required
+        defaultValue={v[name] ?? ""}
+        className="field"
+        aria-invalid={!!err[name]}
+        aria-describedby={err[name] ? id(`${name}-e`) : undefined}
+      >
+        <option value="" disabled>Select…</option>
+        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      </select>
+      {err[name] && <p id={id(`${name}-e`)} className="field-error">{err[name]}</p>}
+    </div>
+  );
+
   return (
     <form
       action={action}
@@ -63,7 +82,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
       onSubmit={(e) => {
         if (fileError) e.preventDefault();
       }}
-      className="flex flex-col gap-8 rounded-[28px] border border-line bg-white p-6 shadow-[var(--shadow-card)] sm:p-10"
+      className="relative flex flex-col gap-8 rounded-[28px] border border-line bg-white p-6 shadow-[var(--shadow-card)] sm:p-10"
     >
       <input type="hidden" name="jobSlug" value={jobSlug} />
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -84,10 +103,13 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
       </fieldset>
 
       <fieldset className="grid gap-5 sm:grid-cols-2">
-        <legend className="mb-4 font-display text-lg font-bold">Education &amp; experience</legend>
+        <legend className="mb-4 font-display text-lg font-bold">Experience</legend>
+        {select("experience", "Total experience", experienceOptions)}
+        {select("noticePeriod", "Notice period", noticeOptions)}
+        {field("currentCompany", "Current role / company", { optional: true, placeholder: "e.g. Frontend Developer at Acme" })}
+        {field("expectedSalary", "Expected salary", { optional: true, placeholder: "e.g. ₹6 LPA" })}
         {field("education", "Highest qualification", { placeholder: "e.g. B.E. Computer Engineering, 2025" })}
-        {field("experience", "Experience", { placeholder: "e.g. 2 years, or Fresher" })}
-        {field("skills", "Key skills", { full: true, placeholder: "e.g. React, TypeScript, Next.js, REST APIs, Git" })}
+        {field("skills", "Key skills", { placeholder: "e.g. React, TypeScript, Next.js" })}
       </fieldset>
 
       <fieldset className="grid gap-5 sm:grid-cols-3">
@@ -98,7 +120,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
       </fieldset>
 
       <fieldset className="grid gap-5">
-        <legend className="mb-4 font-display text-lg font-bold">Resume &amp; cover letter</legend>
+        <legend className="mb-4 font-display text-lg font-bold">Résumé</legend>
         <div className="flex flex-col gap-1.5">
           <label htmlFor={id("resume")} className="label">Resume</label>
           <label
@@ -128,7 +150,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
           />
           {(fileError || err.resume) && <p id={id("resume-e")} className="field-error">{fileError ?? err.resume}</p>}
         </div>
-        {field("coverLetter", "Cover letter", { optional: true, area: true, full: true, placeholder: `Why are you interested in the ${jobTitle} role? Tell us about a project you're proud of.` })}
+        {field("coverLetter", "Why are you a good fit?", { optional: true, area: true, full: true, placeholder: `Tell us why the ${jobTitle} role interests you and about a project you're proud of.` })}
       </fieldset>
 
       <div className="flex flex-col gap-1">
@@ -142,9 +164,12 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
         {err.consent && <p id={id("consent-e")} className="field-error">{err.consent}</p>}
       </div>
 
-      <button type="submit" disabled={pending} className="btn-primary self-start !px-8">
-        {pending ? "Submitting…" : "Submit application"}
-      </button>
+      <div className="flex flex-wrap items-center gap-4">
+        <button type="submit" disabled={pending} className="btn-primary !px-8">
+          {pending ? "Submitting…" : "Submit application"}
+        </button>
+        <span className="text-[13px] text-muted">Your details are only seen by our hiring team.</span>
+      </div>
     </form>
   );
 }

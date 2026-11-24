@@ -82,7 +82,7 @@ export function Header() {
             <Logo />
           </div>
 
-          <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+          <nav aria-label="Main" className="hidden items-center gap-1 xl:flex">
             <div ref={megaRef} className="relative">
               <button
                 type="button"
@@ -143,7 +143,7 @@ export function Header() {
                   key={n.href}
                   href={n.href}
                   aria-current={isActive(n.href) ? "page" : undefined}
-                  className={`rounded-lg px-3 py-2 text-[15px] font-medium hover:text-ocean-text ${
+                  className={`rounded-lg px-3 py-2 text-[15px] font-medium whitespace-nowrap hover:text-ocean-text ${
                     isActive(n.href) ? "text-ocean-text" : ""
                   }`}
                 >
@@ -153,12 +153,12 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link href="/quote" className="btn-primary hidden !px-5 !py-3 sm:inline-flex">
+            <Link href="/quote" className="btn-primary hidden !px-5 !py-3 whitespace-nowrap sm:inline-flex">
               Get a free quote
             </Link>
             <button
               type="button"
-              className="flex h-11 w-11 items-center justify-center rounded-xl border border-line lg:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-line xl:hidden"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"
@@ -176,7 +176,7 @@ export function Header() {
         </div>
 
         {mobileOpen && (
-          <div id="mobile-menu" className="max-h-[calc(100dvh-80px)] overflow-y-auto border-t border-line bg-white lg:hidden">
+          <div id="mobile-menu" className="max-h-[calc(100dvh-80px)] overflow-y-auto border-t border-line bg-white xl:hidden">
             <nav aria-label="Mobile" className="container-ms flex flex-col gap-1 py-4">
               <details className="group rounded-xl">
                 <summary className="flex cursor-pointer list-none items-center justify-between rounded-xl px-3 py-3 text-base font-semibold">

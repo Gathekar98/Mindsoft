@@ -6,7 +6,7 @@ import { submitApplication } from "@/app/actions/applications";
 import type { FormState } from "@/lib/validation";
 
 const initial: FormState = { status: "idle" };
-const MAX = 5 * 1024 * 1024;
+const MAX = 4 * 1024 * 1024;
 
 export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTitle: string }) {
   const [state, action, pending] = useActionState(submitApplication, initial);
@@ -107,7 +107,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
           >
             <svg width="32" height="32" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16" fill="none" stroke="#0A6C9E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             <span className="font-semibold">{fileName ?? "Choose a file"}</span>
-            <span className="text-[13px] text-muted">PDF, DOC or DOCX · max 5 MB</span>
+            <span className="text-[13px] text-muted">PDF, DOC or DOCX · max 4 MB</span>
           </label>
           <input
             id={id("resume")}
@@ -123,7 +123,7 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
               setFileName(f?.name ?? null);
               if (!f) return setFileError(null);
               const ok = /\.(pdf|docx?)$/i.test(f.name);
-              setFileError(!ok ? "Resume must be a PDF, DOC or DOCX file." : f.size > MAX ? "Resume must be 5 MB or smaller." : null);
+              setFileError(!ok ? "Resume must be a PDF, DOC or DOCX file." : f.size > MAX ? "Resume must be 4 MB or smaller." : null);
             }}
           />
           {(fileError || err.resume) && <p id={id("resume-e")} className="field-error">{fileError ?? err.resume}</p>}

@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CtaBand, PageHero } from "@/components/site/PageHero";
-import { db } from "@/lib/db";
-
-export const dynamic = "force-dynamic";
+import { formatDate, publishedPosts } from "@/content/posts";
 
 export const metadata: Metadata = {
   title: "Insights — Practical Guides for Business Owners",
@@ -16,7 +14,7 @@ const covers = ["bg-[linear-gradient(135deg,#D5F3F8,#ECFAFD)]", "bg-[linear-grad
 
 export default async function BlogPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
   const { category } = await searchParams;
-  const all = await db.post.findMany({ where: { status: "PUBLISHED" }, orderBy: { publishedAt: "desc" } });
+  const all = publishedPosts();
   const cats = [...new Set(all.map((p) => p.category))].sort();
   const posts = category ? all.filter((p) => p.category === category) : all;
 
@@ -40,14 +38,14 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
         ) : (
           <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((p, i) => (
-              <li key={p.id}>
+              <li key={p.slug}>
                 <Link href={`/blog/${p.slug}`} className="card-lift reveal flex h-full flex-col overflow-hidden rounded-[22px] border border-line bg-white">
                   <div className={`relative h-[180px] ${covers[i % covers.length]}`}>
-                    {p.coverImage && <Image src={p.coverImage} unoptimized={p.coverImage.startsWith("http")} alt="" fill sizes="(max-width:768px) 100vw, 400px" className="object-cover" />}
+                    {p.coverImage && <Image src={p.coverImage} alt="" fill sizes="(max-width:768px) 100vw, 400px" className="object-cover" />}
                   </div>
                   <div className="flex flex-1 flex-col gap-2 p-6">
                     <span className="text-[13px] text-muted">
-                      {p.category} · <time dateTime={p.publishedAt?.toISOString()}>{p.publishedAt?.toLocaleDateString("en-IN", { dateStyle: "medium" })}</time>
+                      {p.category} · <time dateTime={p.date}>{formatDate(p.date)}</time>
                     </span>
                     <h2 className="font-display text-lg leading-snug font-bold">{p.title}</h2>
                     <p className="text-sm text-slate">{p.excerpt}</p>

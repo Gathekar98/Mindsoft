@@ -21,7 +21,7 @@ export default function PrivacyPage() {
           <ul>
             <li><strong>Enquiries and quote requests:</strong> name, email, phone (optional), company (optional), project details, budget and timeline (optional).</li>
             <li><strong>Job applications:</strong> name, contact details, location, education, experience, skills, profile links, cover letter and resume.</li>
-            <li><strong>Technical data:</strong> a one-way salted hash of your IP address and your browser type, used only to prevent spam and abuse. We do not store your raw IP address.</li>
+            <li><strong>Technical data:</strong> your IP address is checked briefly in memory to prevent spam and abuse. It is not stored.</li>
           </ul>
 
           <h2>How we use it</h2>
@@ -39,7 +39,7 @@ export default function PrivacyPage() {
           <p>Enquiries are kept for up to [CONFIRM: 24 months]. Job applications and resumes are kept for up to [CONFIRM: 12 months] after the hiring decision, then deleted, unless you ask us to keep them for future roles.</p>
 
           <h2>Security</h2>
-          <p>Submissions are stored in a secured database. Resumes are stored privately and are only accessible to authorised staff. Access to our admin system is restricted by role.</p>
+          <p>Form submissions are not stored on this website. They are sent securely (over HTTPS, through our email provider Brevo) to our company inbox, which only authorised staff can access. Resumes arrive as email attachments and are handled the same way. You also receive a confirmation email.</p>
 
           <h2>Sharing</h2>
           <p>We use trusted service providers for hosting, email and security. They process data only on our instructions. We may disclose information if required by law.</p>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
           <p>You can ask to access, correct or delete your personal information, or withdraw consent, by emailing {site.email}.</p>
 
           <h2>Cookies</h2>
-          <p>This website uses only cookies that are strictly necessary for it to work (for example, keeping staff signed in to the admin area). We do not use advertising cookies. [Update if analytics are added.]</p>
+          <p>This website uses only cookies that are strictly necessary for it to work (for example, security features of our hosting provider). We do not use advertising cookies. [Update if analytics are added.]</p>
 
           <h2>Contact</h2>
           <p>Questions about this policy: {site.email}.</p>

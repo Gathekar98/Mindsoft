@@ -10,8 +10,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
-    // Resume uploads go through a server action (5 MB file + form fields).
-    serverActions: { bodySizeLimit: "6mb" },
+    // Resume uploads go through a server action (4 MB file + form fields).
+    serverActions: { bodySizeLimit: "5mb" },
   },
   images: {
     formats: ["image/avif", "image/webp"],

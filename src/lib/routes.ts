@@ -1,6 +1,7 @@
-import "server-only";
-import { db } from "./db";
 import { services } from "./services";
+import { listPublicJobs } from "@/content/jobs";
+import { publishedPosts } from "@/content/posts";
+import { publishedProjects } from "@/content/projects";
 
 export const staticRoutes = [
   { path: "/", label: "Home", group: "Main" },
@@ -22,18 +23,13 @@ export const staticRoutes = [
   { path: "/sitemap", label: "Sitemap", group: "Legal" },
 ];
 
-/** Every public URL, including database-driven pages. */
-export async function allPublicRoutes() {
-  const [jobs, posts, projects] = await Promise.all([
-    db.job.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, title: true, updatedAt: true } }),
-    db.post.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, title: true, updatedAt: true } }),
-    db.project.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, title: true, updatedAt: true } }),
-  ]);
+/** Every public URL, including pages generated from the content files. */
+export function allPublicRoutes() {
   return [
-    ...staticRoutes.map((r) => ({ ...r, updatedAt: undefined as Date | undefined })),
-    ...services.map((s) => ({ path: `/services/${s.slug}`, label: s.name, group: "Services", updatedAt: undefined })),
-    ...jobs.map((j) => ({ path: `/careers/${j.slug}`, label: j.title, group: "Careers", updatedAt: j.updatedAt })),
-    ...posts.map((p) => ({ path: `/blog/${p.slug}`, label: p.title, group: "Insights", updatedAt: p.updatedAt })),
-    ...projects.map((p) => ({ path: `/work/${p.slug}`, label: p.title, group: "Work", updatedAt: p.updatedAt })),
+    ...staticRoutes.map((r) => ({ ...r, updated: undefined as string | undefined })),
+    ...services.map((s) => ({ path: `/services/${s.slug}`, label: s.name, group: "Services", updated: undefined })),
+    ...listPublicJobs().map((j) => ({ path: `/careers/${j.slug}`, label: j.title, group: "Careers", updated: j.postedOn })),
+    ...publishedPosts().map((p) => ({ path: `/blog/${p.slug}`, label: p.title, group: "Insights", updated: p.date })),
+    ...publishedProjects().map((p) => ({ path: `/work/${p.slug}`, label: p.title, group: "Work", updated: p.date })),
   ];
 }

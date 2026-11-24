@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { CareersListing } from "@/components/site/CareersListing";
-import { listPublicJobs } from "@/lib/jobs";
-
-export const dynamic = "force-dynamic";
+import { listPublicJobs } from "@/content/jobs";
 
 export const metadata: Metadata = {
   title: "Internships — React.js & Python",
@@ -10,7 +8,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/careers/internships" },
 };
 
-export default async function InternshipsPage() {
-  const jobs = await listPublicJobs("INTERNSHIP");
-  return <CareersListing jobs={jobs} filter="internships" base="/careers/internships" />;
+export default function InternshipsPage() {
+  return <CareersListing jobs={listPublicJobs("internship")} filter="internships" base="/careers/internships" />;
 }

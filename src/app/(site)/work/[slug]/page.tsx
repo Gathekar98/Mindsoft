@@ -3,25 +3,24 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CtaBand, PageHero } from "@/components/site/PageHero";
 import { Markdown } from "@/components/site/Markdown";
-import { db } from "@/lib/db";
+import { getProject, publishedProjects } from "@/content/projects";
 
-export const dynamic = "force-dynamic";
+export const dynamicParams = false;
 
-async function getProject(slug: string) {
-  const p = await db.project.findUnique({ where: { slug } });
-  return p && p.status === "PUBLISHED" ? p : null;
+export function generateStaticParams() {
+  return publishedProjects().map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = await getProject(slug);
+  const p = getProject(slug);
   if (!p) return { title: "Project not found" };
   return { title: `${p.title} — Case Study`, description: p.summary.slice(0, 160), alternates: { canonical: `/work/${p.slug}` } };
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const p = await getProject(slug);
+  const p = getProject(slug);
   if (!p) notFound();
 
   return (
@@ -30,7 +29,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
       {p.coverImage && (
         <div className="container-ms">
           <div className="relative h-[280px] overflow-hidden rounded-[28px] sm:h-[460px]">
-            <Image src={p.coverImage} unoptimized={p.coverImage.startsWith("http")} alt={`${p.title} project screenshot`} fill priority sizes="(max-width:1240px) 100vw, 1200px" className="object-cover" />
+            <Image src={p.coverImage} alt={`${p.title} project screenshot`} fill priority sizes="(max-width:1240px) 100vw, 1200px" className="object-cover" />
           </div>
         </div>
       )}

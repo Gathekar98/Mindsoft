@@ -1,21 +1,48 @@
 /**
- * Seeds the first admin user and the four draft vacancies.
- * Safe to run more than once (upserts by email / slug).
+ * Job openings and internships.
  *
- *   npm run db:seed
+ * HOW TO MANAGE ROLES (no database needed):
+ *   - Show a role on the website:   status: "open"
+ *   - Show it as closed:            status: "closed"   (visible, no applications)
+ *   - Hide it completely:           status: "draft"
+ *   - Add a role: copy one block below, change the slug/title/details.
+ * Save, commit and push to GitHub — Netlify updates the site automatically.
+ *
+ * Replace every [CONFIRM: …] before setting a role to "open".
  */
-import { PrismaClient, JobKind, JobStatus } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+export type JobStatus = "draft" | "open" | "closed";
+export type JobKind = "job" | "internship";
+
+export interface Job {
+  slug: string; // used in the URL: /careers/<slug>
+  title: string;
+  kind: JobKind;
+  status: JobStatus;
+  department: string;
+  location: string;
+  employmentType: string;
+  experience: string;
+  summary: string;
+  responsibilities: string[];
+  requirements: string[];
+  niceToHave: string[];
+  qualifications: string[];
+  benefits: string[];
+  postedOn?: string; // YYYY-MM-DD, shown on the job page
+  closesOn?: string; // YYYY-MM-DD, applications stop after this date
+}
+
 const LOCATION = "Remote · Pune, Maharashtra, India";
 
-const jobs = [
+export const jobs: Job[] = [
   {
     slug: "react-js-developer",
     title: "React.js Developer",
-    kind: JobKind.JOB,
+    kind: "job",
+    status: "draft",
     department: "Engineering",
+    location: LOCATION,
     employmentType: "Full-time",
     experience: "[CONFIRM: 1–3 years]",
     summary:
@@ -42,12 +69,13 @@ const jobs = [
   {
     slug: "python-developer",
     title: "Python Developer",
-    kind: JobKind.JOB,
+    kind: "job",
+    status: "draft",
     department: "Engineering",
+    location: LOCATION,
     employmentType: "Full-time",
     experience: "[CONFIRM: 1–3 years]",
-    summary:
-      "Design and build reliable APIs, backends and automation with Python, Django and FastAPI.",
+    summary: "Design and build reliable APIs, backends and automation with Python, Django and FastAPI.",
     responsibilities: [
       "Develop REST APIs with Django or FastAPI",
       "Model data in PostgreSQL and write migrations",
@@ -70,12 +98,13 @@ const jobs = [
   {
     slug: "react-js-developer-intern",
     title: "React.js Developer Intern",
-    kind: JobKind.INTERNSHIP,
+    kind: "internship",
+    status: "draft",
     department: "Engineering",
+    location: LOCATION,
     employmentType: "Internship · [CONFIRM: duration, stipend]",
     experience: "Students and freshers",
-    summary:
-      "Learn professional React development by working on real features with guidance from experienced developers.",
+    summary: "Learn professional React development by working on real features with guidance from experienced developers.",
     responsibilities: [
       "Build UI components and pages under guidance",
       "Fix bugs and improve responsiveness",
@@ -95,12 +124,13 @@ const jobs = [
   {
     slug: "python-developer-intern",
     title: "Python Developer Intern",
-    kind: JobKind.INTERNSHIP,
+    kind: "internship",
+    status: "draft",
     department: "Engineering",
+    location: LOCATION,
     employmentType: "Internship · [CONFIRM: duration, stipend]",
     experience: "Students and freshers",
-    summary:
-      "Get hands-on with Python backends, APIs and automation on real projects, with mentoring throughout.",
+    summary: "Get hands-on with Python backends, APIs and automation on real projects, with mentoring throughout.",
     responsibilities: [
       "Write Python scripts and small API endpoints under guidance",
       "Work with databases and SQL queries",
@@ -119,39 +149,26 @@ const jobs = [
   },
 ];
 
-async function main() {
-  const email = process.env.SEED_ADMIN_EMAIL;
-  const password = process.env.SEED_ADMIN_PASSWORD;
-  if (!email || !password || password.length < 10) {
-    throw new Error("Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD (min 10 chars) in .env before seeding.");
-  }
+// ---------------- helpers ----------------
 
-  await prisma.user.upsert({
-    where: { email: email.toLowerCase() },
-    update: {},
-    create: {
-      email: email.toLowerCase(),
-      name: "Administrator",
-      role: "ADMIN",
-      passwordHash: await bcrypt.hash(password, 12),
-    },
-  });
-
-  for (const job of jobs) {
-    await prisma.job.upsert({
-      where: { slug: job.slug },
-      update: {},
-      // Draft until approved for publication in the admin panel.
-      create: { ...job, location: LOCATION, status: JobStatus.DRAFT },
-    });
-  }
-
-  console.log(`Seeded admin ${email} and ${jobs.length} draft vacancies.`);
+function closed(job: Job) {
+  if (job.status === "closed") return true;
+  if (!job.closesOn) return false;
+  return new Date(`${job.closesOn}T23:59:59+05:30`) < new Date();
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+/** Roles visible on the website (open first, then closed). Drafts are hidden. */
+export function listPublicJobs(kind?: JobKind) {
+  return jobs
+    .filter((j) => j.status !== "draft" && (!kind || j.kind === kind))
+    .sort((a, b) => Number(closed(a)) - Number(closed(b)));
+}
+
+export function getPublicJob(slug: string) {
+  const job = jobs.find((j) => j.slug === slug);
+  return job && job.status !== "draft" ? job : null;
+}
+
+export function isAcceptingApplications(job: Job) {
+  return job.status === "open" && !closed(job);
+}

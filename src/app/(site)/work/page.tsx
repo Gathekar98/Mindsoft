@@ -3,9 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CtaBand, PageHero, SectionHead } from "@/components/site/PageHero";
 import { DeviceArt } from "@/components/site/Art";
-import { db } from "@/lib/db";
-
-export const dynamic = "force-dynamic";
+import { publishedProjects } from "@/content/projects";
 
 export const metadata: Metadata = {
   title: "Our Work — Projects & Case Studies",
@@ -21,10 +19,7 @@ const sampleTypes = [
 
 export default async function WorkPage({ searchParams }: { searchParams: Promise<{ industry?: string }> }) {
   const { industry } = await searchParams;
-  const all = await db.project.findMany({
-    where: { status: "PUBLISHED" },
-    orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
-  });
+  const all = publishedProjects();
   const industries = [...new Set(all.map((p) => p.industry))].sort();
   const projects = industry ? all.filter((p) => p.industry === industry) : all;
 
@@ -74,10 +69,10 @@ export default async function WorkPage({ searchParams }: { searchParams: Promise
           ) : (
             <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {projects.map((p) => (
-                <li key={p.id}>
+                <li key={p.slug}>
                   <Link href={`/work/${p.slug}`} className="card-lift reveal flex h-full flex-col overflow-hidden rounded-[22px] border border-line bg-white">
                     <div className="relative h-[220px] bg-[linear-gradient(135deg,#0A5C91,#3EC0D5)]">
-                      {p.coverImage ? <Image src={p.coverImage} unoptimized={p.coverImage.startsWith("http")} alt="" fill sizes="(max-width:768px) 100vw, 400px" className="object-cover" /> : <div className="flex h-full items-end justify-center"><DeviceArt variant="app" /></div>}
+                      {p.coverImage ? <Image src={p.coverImage} alt="" fill sizes="(max-width:768px) 100vw, 400px" className="object-cover" /> : <div className="flex h-full items-end justify-center"><DeviceArt variant="app" /></div>}
                     </div>
                     <div className="flex flex-1 flex-col gap-2 p-6">
                       <span className="text-[13px] font-semibold text-ocean-text uppercase">{p.industry}</span>

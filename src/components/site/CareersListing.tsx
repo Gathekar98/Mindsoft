@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Job } from "@prisma/client";
+import type { Job } from "@/content/jobs";
 import { CheckIcon, PageHero, SectionHead } from "./PageHero";
-import { isAcceptingApplications } from "@/lib/jobs";
+import { isAcceptingApplications } from "@/content/jobs";
 
 const perks = [
   { t: "Remote-first", d: "Work from anywhere, with clear async communication." },
@@ -72,10 +72,10 @@ export function CareersListing({ jobs, filter, base }: { jobs: Job[]; filter: Fi
             {jobs.map((j) => {
               const open = isAcceptingApplications(j);
               return (
-                <li key={j.id} className="card-lift reveal relative flex flex-col gap-4 rounded-[22px] border border-line bg-white p-7">
+                <li key={j.slug} className="card-lift reveal relative flex flex-col gap-4 rounded-[22px] border border-line bg-white p-7">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className={`rounded-full px-3 py-1 text-xs font-bold ${j.kind === "INTERNSHIP" ? "bg-mint-soft text-mint-text" : "bg-sky text-ocean"}`}>
-                      {j.kind === "INTERNSHIP" ? "Internship" : "Job"}
+                    <span className={`rounded-full px-3 py-1 text-xs font-bold ${j.kind === "internship" ? "bg-mint-soft text-mint-text" : "bg-sky text-ocean"}`}>
+                      {j.kind === "internship" ? "Internship" : "Job"}
                     </span>
                     {!open && <span className="rounded-full bg-[#F1F2F6] px-3 py-1 text-xs font-bold text-muted">Closed</span>}
                   </div>

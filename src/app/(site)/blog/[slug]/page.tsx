@@ -4,33 +4,32 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs, CtaBand } from "@/components/site/PageHero";
 import { Markdown } from "@/components/site/Markdown";
-import { db } from "@/lib/db";
+import { formatDate, getPost, publishedPosts } from "@/content/posts";
 import { site } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const dynamicParams = false;
 
-async function getPost(slug: string) {
-  const p = await db.post.findUnique({ where: { slug } });
-  return p && p.status === "PUBLISHED" ? p : null;
+export function generateStaticParams() {
+  return publishedPosts().map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = await getPost(slug);
+  const p = getPost(slug);
   if (!p) return { title: "Article not found" };
   return {
     title: p.title,
     description: p.excerpt.slice(0, 160),
     alternates: { canonical: `/blog/${p.slug}` },
-    openGraph: { type: "article", title: p.title, description: p.excerpt, publishedTime: p.publishedAt?.toISOString(), ...(p.coverImage ? { images: [p.coverImage] } : {}) },
+    openGraph: { type: "article", title: p.title, description: p.excerpt, publishedTime: p.date, ...(p.coverImage ? { images: [p.coverImage] } : {}) },
   };
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const p = await getPost(slug);
+  const p = getPost(slug);
   if (!p) notFound();
-  const more = await db.post.findMany({ where: { status: "PUBLISHED", NOT: { id: p.id } }, orderBy: { publishedAt: "desc" }, take: 3 });
+  const more = publishedPosts().filter((x) => x.slug !== p.slug).slice(0, 3);
 
   return (
     <>
@@ -42,14 +41,14 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <h1 className="animate-rise font-display text-[34px] leading-[1.12] font-extrabold tracking-[-0.02em] sm:text-[46px]">{p.title}</h1>
             <p className="text-lg text-slate">{p.excerpt}</p>
             <p className="text-sm text-muted">
-              By {site.name} · <time dateTime={p.publishedAt?.toISOString()}>{p.publishedAt?.toLocaleDateString("en-IN", { dateStyle: "long" })}</time>
+              By {site.name} · <time dateTime={p.date}>{formatDate(p.date, "long")}</time>
             </p>
           </div>
         </header>
         {p.coverImage && (
           <div className="container-ms max-w-[1000px]">
             <div className="relative h-[260px] overflow-hidden rounded-[28px] sm:h-[420px]">
-              <Image src={p.coverImage} unoptimized={p.coverImage.startsWith("http")} alt="" fill priority sizes="1000px" className="object-cover" />
+              <Image src={p.coverImage} alt="" fill priority sizes="1000px" className="object-cover" />
             </div>
           </div>
         )}
@@ -64,7 +63,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <h2 className="font-display text-2xl font-extrabold">More insights</h2>
             <ul className="grid gap-5 md:grid-cols-3">
               {more.map((m) => (
-                <li key={m.id}>
+                <li key={m.slug}>
                   <Link href={`/blog/${m.slug}`} className="card-lift flex h-full flex-col gap-2 rounded-[20px] bg-white p-6">
                     <span className="text-[13px] text-muted">{m.category}</span>
                     <h3 className="font-display font-bold">{m.title}</h3>
@@ -85,8 +84,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             "@type": "BlogPosting",
             headline: p.title,
             description: p.excerpt,
-            datePublished: p.publishedAt?.toISOString(),
-            dateModified: p.updatedAt.toISOString(),
+            datePublished: p.date,
             author: { "@type": "Organization", name: site.name },
             publisher: { "@type": "Organization", name: site.name },
             mainEntityOfPage: `${site.url}/blog/${p.slug}`,

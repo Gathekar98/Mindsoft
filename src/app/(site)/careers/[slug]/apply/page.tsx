@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
-import { getPublicJob, isAcceptingApplications } from "@/lib/jobs";
+import { getPublicJob, isAcceptingApplications } from "@/content/jobs";
 
 export const dynamic = "force-dynamic";
 

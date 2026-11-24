@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { CareersListing } from "@/components/site/CareersListing";
-import { listPublicJobs } from "@/lib/jobs";
-
-export const dynamic = "force-dynamic";
+import { listPublicJobs } from "@/content/jobs";
 
 export const metadata: Metadata = {
   title: "Careers — React.js & Python Developer Jobs",
@@ -13,6 +11,5 @@ export const metadata: Metadata = {
 export default async function CareersPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   const { type } = await searchParams;
   const filter = type === "jobs" ? "jobs" : "all";
-  const jobs = await listPublicJobs(filter === "jobs" ? "JOB" : undefined);
-  return <CareersListing jobs={jobs} filter={filter} base="/careers" />;
+  return <CareersListing jobs={listPublicJobs(filter === "jobs" ? "job" : undefined)} filter={filter} base="/careers" />;
 }

@@ -2,10 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckIcon, PageHero } from "@/components/site/PageHero";
-import { getPublicJob, isAcceptingApplications } from "@/lib/jobs";
+import { getPublicJob, isAcceptingApplications, listPublicJobs } from "@/content/jobs";
+import { formatDate } from "@/content/posts";
 import { site } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const dynamicParams = false;
+// Re-check "closesOn" dates hourly without a rebuild.
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return listPublicJobs().map((j) => ({ slug: j.slug }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -23,7 +30,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
   const job = await getPublicJob(slug);
   if (!job) notFound();
   const open = isAcceptingApplications(job);
-  const parentCrumb = job.kind === "INTERNSHIP" ? { label: "Internships", href: "/careers/internships" } : { label: "Careers", href: "/careers" };
+  const parentCrumb = job.kind === "internship" ? { label: "Internships", href: "/careers/internships" } : { label: "Careers", href: "/careers" };
 
   const blocks = [
     { t: "What you'll do", items: job.responsibilities },
@@ -36,10 +43,10 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
   return (
     <>
       <PageHero
-        eyebrow={job.kind === "INTERNSHIP" ? "Internship" : job.department}
+        eyebrow={job.kind === "internship" ? "Internship" : job.department}
         title={job.title}
         intro={job.summary}
-        crumbs={[{ label: "Careers", href: "/careers" }, ...(job.kind === "INTERNSHIP" ? [parentCrumb] : []), { label: job.title }]}
+        crumbs={[{ label: "Careers", href: "/careers" }, ...(job.kind === "internship" ? [parentCrumb] : []), { label: job.title }]}
       >
         {open ? (
           <Link href={`/careers/${job.slug}/apply`} className="btn-primary">Apply for this role</Link>
@@ -70,7 +77,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
                 ["Experience", job.experience],
                 ["Location", job.location],
                 ["Department", job.department],
-                ...(job.closesAt ? [["Apply by", job.closesAt.toLocaleDateString("en-IN", { dateStyle: "medium" })]] : []),
+                ...(job.closesOn ? [["Apply by", formatDate(job.closesOn)]] : []),
               ].map(([k, v]) => (
                 <div key={k} className="flex flex-col">
                   <dt className="text-muted">{k}</dt>
@@ -79,7 +86,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
               ))}
             </dl>
             {open && <Link href={`/careers/${job.slug}/apply`} className="btn-primary mt-2">Apply now</Link>}
-            <p className="text-xs text-muted">Applications take about 5 minutes. Have your resume (PDF/DOC, max 5 MB) ready.</p>
+            <p className="text-xs text-muted">Applications take about 5 minutes. Have your resume (PDF/DOC, max 4 MB) ready.</p>
           </div>
         </aside>
       </section>
@@ -93,9 +100,9 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
               "@type": "JobPosting",
               title: job.title,
               description: [job.summary, ...job.responsibilities, ...job.requirements].join(" "),
-              datePosted: (job.publishedAt ?? job.createdAt).toISOString(),
-              ...(job.closesAt ? { validThrough: job.closesAt.toISOString() } : {}),
-              employmentType: job.kind === "INTERNSHIP" ? "INTERN" : "FULL_TIME",
+              ...(job.postedOn ? { datePosted: job.postedOn } : {}),
+              ...(job.closesOn ? { validThrough: `${job.closesOn}T23:59:59+05:30` } : {}),
+              employmentType: job.kind === "internship" ? "INTERN" : "FULL_TIME",
               jobLocationType: "TELECOMMUTE",
               applicantLocationRequirements: { "@type": "Country", name: "India" },
               hiringOrganization: { "@type": "Organization", name: site.name, sameAs: site.url },

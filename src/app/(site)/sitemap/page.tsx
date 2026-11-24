@@ -3,8 +3,6 @@ import Link from "next/link";
 import { PageHero } from "@/components/site/PageHero";
 import { allPublicRoutes } from "@/lib/routes";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Sitemap",
   description: "All pages on the Mindsoft Tech Solutions website.",
@@ -13,8 +11,8 @@ export const metadata: Metadata = {
 
 const order = ["Main", "Company", "Services", "Careers", "Work", "Insights", "Legal"];
 
-export default async function SitemapPage() {
-  const routes = await allPublicRoutes();
+export default function SitemapPage() {
+  const routes = allPublicRoutes();
   const groups = order
     .map((g) => ({ g, items: routes.filter((r) => r.group === g) }))
     .filter((x) => x.items.length);

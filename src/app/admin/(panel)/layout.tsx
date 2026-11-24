@@ -31,7 +31,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       <aside className="border-b border-line bg-navy text-white lg:sticky lg:top-0 lg:h-dvh lg:border-r lg:border-b-0">
         <div className="flex items-center justify-between gap-3 p-5">
           <Link href="/admin" className="flex items-center gap-3">
-            <LogoMark size={34} />
+            <LogoMark size={36} onDark />
             <span className="font-display font-extrabold">Mindsoft Admin</span>
           </Link>
           <Link href="/" className="text-xs text-on-dark hover:text-white lg:hidden">View site ↗</Link>

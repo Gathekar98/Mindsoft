@@ -36,7 +36,8 @@ export default function HomePage() {
           <div className="flex flex-col gap-6">
             <span className="inline-flex animate-rise items-center gap-2.5 self-start rounded-full border border-[#CDEBF6] bg-white px-4 py-2 text-sm font-medium text-ocean">
               <span className="h-2.5 w-2.5 animate-ping-soft rounded-full bg-mint" />
-              Now taking new projects · {site.availability}
+              Now taking new projects
+               {/* · {site.availability} */}
             </span>
             <h1 className="animate-rise font-display text-[40px] leading-[1.08] font-extrabold tracking-[-0.02em] [animation-delay:.12s] sm:text-[52px] xl:text-[60px]">
               We build <RotatingWord words={["websites", "web apps", "software", "automations"]} />

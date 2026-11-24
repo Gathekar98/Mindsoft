@@ -33,7 +33,13 @@ Without `BREVO_API_KEY`, forms still work locally and the emails are **printed i
 
 Search the code for `[CONFIRM` to find placeholders that still need real values.
 
-## Deploying on Netlify (free)
+## Deploying on Vercel
+
+1. vercel.com → Add New → Project → Import `Gathekar98/Mindsoft` (framework: Next.js, detected automatically).
+2. Environment Variables: `NEXT_PUBLIC_SITE_URL` (your live URL), `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`, `NOTIFY_EMAIL`, optionally `CAREERS_EMAIL`, `IP_HASH_SALT`.
+3. Deploy. Every push to `main` redeploys automatically. Server code runs in Mumbai (`vercel.json` → `bom1`).
+
+## Deploying on Netlify (alternative)
 
 1. Netlify → **Add new project → Import from GitHub** → choose this repo. Build settings come from `netlify.toml`.
 2. Add environment variables (Site configuration → Environment variables):

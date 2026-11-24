@@ -2,7 +2,7 @@
 
 import { b, buttons, emailShell, getToKnowUs, grid, highlight, list, p, pHtml, section, signoff, siteUrl, steps } from "@/lib/email-templates";
 import { inbox, sendMail } from "@/lib/mailer";
-import { clientFingerprint, rateLimit, verifyTurnstile } from "@/lib/security";
+import { clientFingerprint, isRateLimited, recordSubmission, verifyTurnstile } from "@/lib/security";
 import { getService } from "@/lib/services";
 import { site } from "@/lib/site";
 import { flattenErrors, leadSchema, type FormState } from "@/lib/validation";
@@ -23,8 +23,9 @@ export async function submitLead(_prev: FormState, formData: FormData): Promise<
   }
 
   const { ipHash } = await clientFingerprint();
-  if (!rateLimit(`lead:${ipHash}`, 5, 10 * 60 * 1000)) {
-    return { status: "error", message: "Too many submissions. Please wait a few minutes and try again.", values: keep };
+  const ipKey = `lead:ip:${ipHash}`;
+  if (isRateLimited(ipKey, 10, 60 * 60 * 1000)) {
+    return { status: "error", message: "We've received several messages from your connection in the last hour. Please try again a little later, or email us directly.", values: keep };
   }
 
   if (!(await verifyTurnstile(formData.get("cf-turnstile-response") as string | null))) {
@@ -83,6 +84,8 @@ export async function submitLead(_prev: FormState, formData: FormData): Promise<
       values: keep,
     };
   }
+
+  recordSubmission(ipKey);
 
   // 2) Confirmation to the visitor (a failure here must not fail the submission)
   try {

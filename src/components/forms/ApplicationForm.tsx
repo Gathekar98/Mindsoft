@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useId, useState } from "react";
+import { startTransition, useActionState, useId, useState } from "react";
 import { submitApplication } from "@/app/actions/applications";
 import { experienceOptions, noticeOptions, type FormState } from "@/lib/validation";
 
@@ -77,10 +77,14 @@ export function ApplicationForm({ jobSlug, jobTitle }: { jobSlug: string; jobTit
 
   return (
     <form
-      action={action}
       noValidate
       onSubmit={(e) => {
-        if (fileError) e.preventDefault();
+        // Submit manually so React doesn't reset the form: after a validation
+        // error the candidate keeps every answer, dropdown and the attached résumé.
+        e.preventDefault();
+        if (fileError || pending) return;
+        const fd = new FormData(e.currentTarget);
+        startTransition(() => action(fd));
       }}
       className="relative flex flex-col gap-8 rounded-[28px] border border-line bg-white p-6 shadow-[var(--shadow-card)] sm:p-10"
     >

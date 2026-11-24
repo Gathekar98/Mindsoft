@@ -14,21 +14,31 @@ export async function clientFingerprint() {
 }
 
 /**
- * Simple in-memory sliding-window rate limiter.
- * Good enough for a single server; use Redis/Upstash when running multiple instances.
+ * Simple in-memory sliding-window rate limiter (per server instance).
+ * Only SUCCESSFUL submissions are recorded, so visitors who fix validation
+ * errors are never locked out. Disabled in local development.
  */
 const buckets = new Map<string, number[]>();
+const enabled = process.env.NODE_ENV === "production";
 
-export function rateLimit(key: string, limit: number, windowMs: number) {
+function recent(key: string, windowMs: number) {
   const now = Date.now();
   const hits = (buckets.get(key) ?? []).filter((t) => now - t < windowMs);
-  if (hits.length >= limit) {
-    buckets.set(key, hits);
-    return false;
-  }
-  hits.push(now);
   buckets.set(key, hits);
-  return true;
+  return hits;
+}
+
+/** True when `key` already has `limit` successful submissions within the window. */
+export function isRateLimited(key: string, limit: number, windowMs: number) {
+  if (!enabled) return false;
+  return recent(key, windowMs).length >= limit;
+}
+
+/** Record one successful submission for each key. */
+export function recordSubmission(...keys: string[]) {
+  if (!enabled) return;
+  const now = Date.now();
+  for (const k of keys) buckets.set(k, [...(buckets.get(k) ?? []), now]);
 }
 
 /** Optional Cloudflare Turnstile check. Passes when Turnstile isn't configured. */

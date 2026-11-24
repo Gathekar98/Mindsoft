@@ -4,7 +4,7 @@ import { getPublicJob, isAcceptingApplications } from "@/content/jobs";
 import { b, buttons, emailShell, getToKnowUs, grid, highlight, list, p, pHtml, section, signoff, siteUrl, steps } from "@/lib/email-templates";
 import { inbox, sendMail } from "@/lib/mailer";
 import { RESUME_MAX_BYTES, detectResumeType, resumeFileName } from "@/lib/resume";
-import { clientFingerprint, rateLimit, verifyTurnstile } from "@/lib/security";
+import { clientFingerprint, isRateLimited, recordSubmission, verifyTurnstile } from "@/lib/security";
 import { site } from "@/lib/site";
 import { applicationSchema, flattenErrors, type FormState } from "@/lib/validation";
 
@@ -23,9 +23,11 @@ export async function submitApplication(_prev: FormState, formData: FormData): P
 
   if (formData.get("website")) return { status: "success", message: "Application received." };
 
+  const HOUR = 60 * 60 * 1000;
   const { ipHash } = await clientFingerprint();
-  if (!rateLimit(`apply:${ipHash}`, 4, 30 * 60 * 1000)) {
-    return { status: "error", message: "Too many applications from this connection. Please try again later.", values: keep };
+  const ipKey = `apply:ip:${ipHash}`;
+  if (isRateLimited(ipKey, 10, HOUR)) {
+    return { status: "error", message: "We've received several applications from your connection in the last hour. Please try again a little later.", values: keep };
   }
   if (!(await verifyTurnstile(formData.get("cf-turnstile-response") as string | null))) {
     return { status: "error", message: "Spam check failed. Please try again.", values: keep };
@@ -58,6 +60,10 @@ export async function submitApplication(_prev: FormState, formData: FormData): P
   }
 
   const d = parsed.data;
+  const dupKey = `apply:dup:${d.email}:${job.slug}`;
+  if (isRateLimited(dupKey, 3, HOUR)) {
+    return { status: "error", message: `You've already applied for ${job.title} recently. We have your application — no need to send it again.`, values: keep };
+  }
   const firstName = d.fullName.split(" ")[0];
   const attachmentName = resumeFileName(d.fullName, resume.ext);
   const received = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
@@ -116,6 +122,8 @@ export async function submitApplication(_prev: FormState, formData: FormData): P
       values: keep,
     };
   }
+
+  recordSubmission(ipKey, dupKey);
 
   // 2) Confirmation to the candidate (must not fail the submission)
   try {

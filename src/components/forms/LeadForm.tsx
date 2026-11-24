@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { startTransition, useActionState, useId } from "react";
 import { submitLead } from "@/app/actions/leads";
 import { budgetOptions, timelineOptions, type FormState } from "@/lib/validation";
 import { serviceOptions } from "@/lib/services";
@@ -43,7 +43,17 @@ export function LeadForm({ type, defaultService, sourcePage, compact = false, su
   const isQuote = type === "QUOTE";
 
   return (
-    <form action={action} noValidate className="grid gap-4 rounded-[22px] bg-white p-6 text-navy sm:grid-cols-2 sm:p-8">
+    <form
+      noValidate
+      onSubmit={(e) => {
+        // Submit manually so React doesn't reset the form after a validation error.
+        e.preventDefault();
+        if (pending) return;
+        const fd = new FormData(e.currentTarget);
+        startTransition(() => action(fd));
+      }}
+      className="grid gap-4 rounded-[22px] bg-white p-6 text-navy sm:grid-cols-2 sm:p-8"
+    >
       <input type="hidden" name="type" value={type} />
       <input type="hidden" name="sourcePage" value={sourcePage ?? ""} />
       {/* Honeypot */}

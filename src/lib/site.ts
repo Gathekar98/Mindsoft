@@ -10,7 +10,7 @@ export const site = {
   tagline: "Websites, web apps and custom software for growing businesses.",
   description:
     "Mindsoft Tech Solutions is a remote-first IT services company in Pune, Maharashtra, India. We design, build and maintain websites, web applications and business software.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/+$/, ""),
   location: "Pune, Maharashtra, India",
   // --- Placeholders: confirm before launch ---
   email: "ashwinigathekar2704@gmail.com",

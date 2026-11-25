@@ -70,6 +70,10 @@ interface Overrides {
   skills?: string[];
   extraDo?: string[];
   extraNeed?: string[];
+  /** Replace the profile's duties / requirements / nice-to-haves (used for internships). */
+  do?: string[];
+  need?: string[];
+  nice?: string[];
 }
 
 const DEFAULT_POSTED = "2026-11-24";
@@ -124,16 +128,16 @@ function role(title: string, team: Team, profileKey: ProfileKey, level: LevelKey
     closesOn: o.closesOn,
     hiringNow: o.hiringNow,
     summary: o.summary ?? p.about,
-    about: `${p.about} ${levelIntro[level]}`,
+    about: `${o.summary ?? p.about} ${levelIntro[level]}`,
     skills: o.skills ?? p.skills,
-    responsibilities: [...p.do, ...(o.extraDo ?? []), ...l.do],
+    responsibilities: [...(o.do ?? p.do), ...(o.extraDo ?? []), ...l.do],
     requirements: [
       ...(internship || level === "fresher" ? [] : [`${experience} of relevant professional experience`]),
-      ...p.need,
+      ...(o.need ?? p.need),
       ...(o.extraNeed ?? []),
       ...l.need,
     ],
-    niceToHave: p.nice,
+    niceToHave: o.nice ?? p.nice,
   };
 }
 
@@ -252,6 +256,123 @@ const roleList: Job[] = [
   // Internships
   role("React.js Developer Intern", "Internships", "react", "intern", { slug: "react-js-developer-intern" }),
   role("Python Developer Intern", "Internships", "python", "intern", { slug: "python-developer-intern" }),
+  role("Full Stack Web Development Intern", "Internships", "mern", "intern", {
+    employmentType: "Internship · 1–3 months",
+    summary: "Build complete web features, from a React interface to a Node.js API and database, on real client work.",
+    skills: ["HTML & CSS", "JavaScript", "React", "Node.js", "MongoDB / SQL"],
+    do: [
+      "Build responsive pages and reusable React components",
+      "Create REST APIs with Node.js and Express",
+      "Connect front-ends to databases and third-party APIs",
+      "Deploy features and fix bugs found in testing",
+    ],
+    need: ["Basic HTML, CSS and JavaScript", "Some exposure to React or another front-end framework", "Understanding of how the web works (HTTP, APIs)"],
+    nice: ["A deployed personal project", "Familiarity with Git and GitHub"],
+  }),
+  role("Data Science & Machine Learning Intern", "Internships", "aiml", "intern", {
+    employmentType: "Internship · 1–3 months",
+    summary: "Turn real business data into insights and simple machine-learning models, with a mentor guiding each step.",
+    skills: ["Python", "Pandas", "SQL", "scikit-learn", "Data visualisation"],
+    do: [
+      "Clean, explore and visualise datasets",
+      "Build and evaluate basic ML models with scikit-learn",
+      "Write SQL queries for reports and analysis",
+      "Present findings in short, clear summaries",
+    ],
+    need: ["Python fundamentals", "Basic statistics (mean, distribution, correlation)", "Comfort working with spreadsheets or tables of data"],
+    nice: ["A Kaggle or academic data project", "Exposure to Jupyter notebooks"],
+  }),
+  role("Java Backend & API Development Intern", "Internships", "java", "intern", {
+    employmentType: "Internship · 2–3 months",
+    summary: "Learn to build reliable backend services with Java and Spring Boot, from API design to database.",
+    skills: ["Core Java", "Spring Boot", "REST APIs", "SQL", "Git"],
+    do: [
+      "Build REST endpoints with Spring Boot",
+      "Design simple database schemas and queries",
+      "Add validation, logging and error handling",
+      "Write unit tests for the code you ship",
+    ],
+    need: ["Core Java and object-oriented programming", "Basic SQL", "Willingness to learn Spring Boot"],
+    nice: ["A Java project on GitHub", "Familiarity with Postman or similar tools"],
+  }),
+  role("Mobile App Development Intern", "Internships", "reactNative", "intern", {
+    employmentType: "Internship · 2–3 months",
+    summary: "Help build cross-platform mobile apps with React Native, from first screen to a working release build.",
+    skills: ["React Native", "JavaScript", "Expo", "REST APIs", "Git"],
+    do: [
+      "Build app screens and navigation with React Native",
+      "Connect screens to APIs and handle loading and errors",
+      "Test on Android and iOS devices or emulators",
+      "Fix UI and performance issues found in reviews",
+    ],
+    need: ["JavaScript fundamentals", "Basic React knowledge", "An Android phone or emulator for testing"],
+    nice: ["A small app you've built, even a practice one", "Interest in mobile UI design"],
+  }),
+  role("UI/UX Design Intern", "Internships", "ux", "intern", {
+    employmentType: "Internship · 1–2 months",
+    summary: "Design clear, usable screens for websites and apps, from research and wireframes to polished Figma prototypes.",
+    skills: ["Figma", "Wireframing", "Prototyping", "User research", "Design systems"],
+    do: [
+      "Create wireframes and user flows for new features",
+      "Design polished screens in Figma using our design system",
+      "Build clickable prototypes for reviews",
+      "Help run quick usability tests and note findings",
+    ],
+    need: ["Working knowledge of Figma", "A portfolio with at least 2–3 design pieces", "An eye for layout, spacing and typography"],
+    nice: ["Understanding of accessibility basics", "Interest in how designs are built in code"],
+  }),
+  role("Cloud Computing & AWS Intern", "Internships", "cloud", "intern", {
+    employmentType: "Internship · 2–3 months",
+    summary: "Learn how real applications are hosted on AWS, from compute and storage to access control and monitoring.",
+    skills: ["AWS", "Linux", "Networking basics", "IAM", "Monitoring"],
+    do: [
+      "Set up compute, storage and databases on AWS",
+      "Deploy sample and client applications to the cloud",
+      "Configure users, roles and basic security",
+      "Watch costs, logs and alerts with your mentor",
+    ],
+    need: ["Basic Linux command line", "Understanding of networking basics (IP, DNS, HTTP)", "Curiosity about how websites run in production"],
+    nice: ["An AWS free-tier project", "Progress towards an AWS Cloud Practitioner certificate"],
+  }),
+  role("DevOps & Cloud Engineering Intern", "Internships", "devops", "intern", {
+    employmentType: "Internship · 2–3 months",
+    summary: "Automate how software is built, tested and shipped, using Git, Docker and CI/CD pipelines.",
+    skills: ["Linux", "Git", "Docker", "CI/CD", "Shell scripting"],
+    do: [
+      "Write Dockerfiles for web applications",
+      "Build and improve CI/CD pipelines",
+      "Automate routine tasks with shell scripts",
+      "Help monitor deployments and respond to issues",
+    ],
+    need: ["Comfort with the Linux command line", "Basic Git usage", "Interest in automation and infrastructure"],
+    nice: ["A project using Docker", "Exposure to GitHub Actions or similar tools"],
+  }),
+  role("Cybersecurity & Ethical Hacking Intern", "Internships", "qaSecurity", "intern", {
+    employmentType: "Internship · 2–3 months",
+    summary: "Build practical security skills by testing our own applications responsibly and helping fix what you find.",
+    skills: ["Networking", "Linux", "OWASP Top 10", "Burp Suite", "Web security"],
+    do: [
+      "Test web applications against the OWASP Top 10 in approved environments",
+      "Document findings with clear steps and fixes",
+      "Review code and configuration for common security mistakes",
+      "Help set up basic monitoring and alerts",
+    ],
+    need: ["Networking and Linux fundamentals", "Basic understanding of how web applications work", "A strong sense of ethics: testing only what you're authorised to test"],
+    nice: ["CTF or lab experience (TryHackMe, Hack The Box)", "Familiarity with Burp Suite or OWASP ZAP"],
+  }),
+  role("Digital Marketing Intern", "Internships", "marcom", "intern", {
+    employmentType: "Internship · 1–2 months",
+    summary: "Help grow Mindsoft's online presence through content, social media, SEO and simple campaigns.",
+    skills: ["Social media", "SEO basics", "Content writing", "Canva", "Google Analytics"],
+    do: [
+      "Plan and schedule social media posts",
+      "Write short blog posts and website copy",
+      "Research keywords and help improve page SEO",
+      "Track campaign results and share weekly numbers",
+    ],
+    need: ["Good written English", "Active interest in social media and online marketing", "Basic design skills with Canva or similar"],
+    nice: ["A blog, page or channel you've grown", "Google Analytics or Digital Marketing certificate"],
+  }),
 ];
 
 export const jobs: Job[] = roleList;

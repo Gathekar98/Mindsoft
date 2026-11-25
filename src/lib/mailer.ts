@@ -2,7 +2,7 @@ import "server-only";
 import { site } from "./site";
 
 /**
- * Sends email through Brevo's HTTPS API (same approach as NexSkill Labs).
+ * Sends email through Brevo's HTTPS API.
  * HTTPS works on Netlify and other hosts that block SMTP ports.
  * HTML templates live in ./email-templates.ts.
  *

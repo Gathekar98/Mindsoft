@@ -24,7 +24,7 @@ export default function TermsPage() {
           <p>Estimates given through the website are indicative. A project starts only after both parties agree a written scope, price and terms.</p>
 
           <h2>Intellectual property</h2>
-          <p>The design, text and graphics of this website belong to {site.name} or are used under licence. Photographs are used under the Unsplash License. You may not copy them for commercial use without permission.</p>
+          <p>The design, text and graphics of this website belong to {site.name} or are used under licence. You may not copy them for commercial use without permission.</p>
 
           <h2>Acceptable use</h2>
           <p>Do not misuse forms, attempt to access restricted areas, upload harmful files or interfere with the website&apos;s operation.</p>

@@ -22,7 +22,7 @@ const groups = [
   {
     t: "Careers",
     items: [
-      { q: "Do you offer internships?", a: "Yes, we offer React.js and Python internships for students and freshers when positions are open. See the Internships page for current openings." },
+      { q: "Do you offer internships?", a: "Yes. We offer remote internships for students and freshers in web development, data science, mobile, UI/UX design, cloud, DevOps, cybersecurity and digital marketing. See the Internships page for current openings." },
       { q: "Is the work remote?", a: "Yes. Mindsoft is remote-first, based in Pune, Maharashtra, India." },
       { q: "How will I know the status of my application?", a: "We review every application and contact shortlisted candidates by email." },
     ],

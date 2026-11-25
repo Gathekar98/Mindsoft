@@ -8,7 +8,7 @@ export interface Industry {
   service: string; // related service slug
 }
 
-/** Industries shown on the homepage and /industries (photos: Unsplash License). */
+/** Industries shown on the homepage and /industries. */
 export const industries: Industry[] = [
   {
     slug: "retail-ecommerce",

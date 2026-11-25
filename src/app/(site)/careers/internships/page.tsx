@@ -6,8 +6,9 @@ import { listPublicJobs } from "@/content/jobs";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Internships — React.js & Python",
-  description: "Internships at Mindsoft Tech Solutions for students and freshers: hands-on experience on real projects with mentoring.",
+  title: "Internships — Web, Data, Cloud, Design & More",
+  description:
+    "Remote internships at Mindsoft Tech Solutions for students and freshers: React, Python, full stack, Java, mobile, data science, UI/UX, cloud, DevOps, cybersecurity and digital marketing, with mentoring on real projects.",
   alternates: { canonical: "/careers/internships" },
 };
 

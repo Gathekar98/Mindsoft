@@ -315,7 +315,7 @@ export default function HomePage() {
             </svg>
             <p className="eyebrow !text-white">Careers &amp; internships</p>
             <h2 className="font-display text-[28px] leading-tight font-extrabold">Grow your career with Mindsoft.</h2>
-            <p className="text-[15px] leading-relaxed text-[#E3F6FB]">React.js and Python roles for developers, and internships for students and freshers.</p>
+            <p className="text-[15px] leading-relaxed text-[#E3F6FB]">Developer, design and business roles, plus internships in web, data, cloud, design and marketing for students and freshers.</p>
             <ul className="flex flex-wrap gap-2 text-[13px]">
               {["React.js Developer", "Python Developer", "Internships"].map((t) => (
                 <li key={t} className="rounded-full bg-white/20 px-3 py-1.5">{t}</li>

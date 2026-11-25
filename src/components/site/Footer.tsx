@@ -74,7 +74,7 @@ export function Footer() {
 
         <div className="flex flex-col justify-between gap-3 border-t border-[#1e2a5c] pt-6 text-[13px] sm:flex-row">
           <span>
-            © {new Date().getFullYear()} {site.name}. Photos: Unsplash.
+            © {new Date().getFullYear()} {site.name}. All rights reserved.
           </span>
           <span className="flex flex-wrap gap-x-4 gap-y-1">
             <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>

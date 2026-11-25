@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CtaBand, PageHero, SectionHead } from "@/components/site/PageHero";
 import { DeviceArt } from "@/components/site/Art";
+import { WorkSamples } from "@/components/site/WorkSamples";
 import { publishedProjects } from "@/content/projects";
 
 export const metadata: Metadata = {
@@ -10,12 +11,6 @@ export const metadata: Metadata = {
   description: "Projects and case studies from Mindsoft Tech Solutions: websites, web applications, e-commerce and business software.",
   alternates: { canonical: "/work" },
 };
-
-const sampleTypes = [
-  { v: "store" as const, bg: "bg-[linear-gradient(135deg,#127FA6,#3EC0D5)]", tag: "E-commerce", t: "Online stores with payments and inventory", href: "/services/ecommerce-development" },
-  { v: "app" as const, bg: "bg-[linear-gradient(135deg,#FF8A5B,#FFC857)]", tag: "CRM / ERP · Web app", t: "Internal tools that replace spreadsheets", href: "/services/crm-erp-solutions" },
-  { v: "corporate" as const, bg: "bg-[linear-gradient(135deg,#1AA67A,#7FE3F0)]", tag: "Corporate website", t: "Fast, responsive sites that win enquiries", href: "/services/corporate-website-development" },
-];
 
 export default async function WorkPage({ searchParams }: { searchParams: Promise<{ industry?: string }> }) {
   const { industry } = await searchParams;
@@ -41,18 +36,12 @@ export default async function WorkPage({ searchParams }: { searchParams: Promise
             </p>
             <Link href="/contact" className="btn-primary mt-6">Ask for relevant examples</Link>
           </div>
-          <SectionHead eyebrow="What we build" title="Sample project types" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {sampleTypes.map((p) => (
-              <Link key={p.v} href={p.href} className="card-lift reveal flex flex-col overflow-hidden rounded-[22px] bg-navy text-white">
-                <div className={`flex h-[230px] items-end justify-center ${p.bg}`}><DeviceArt variant={p.v} /></div>
-                <div className="flex flex-col gap-2 p-6">
-                  <span className="text-[13px] font-semibold tracking-wide text-aqua uppercase">{p.tag} · Sample project type</span>
-                  <h3 className="font-display text-xl font-bold">{p.t}</h3>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <SectionHead
+            eyebrow="What we build"
+            title="Sample project types"
+            intro="The kinds of products we design and build for growing businesses. Previews are illustrative; timelines are typical ranges and are confirmed in your proposal."
+          />
+          <WorkSamples />
         </section>
       ) : (
         <section className="container-ms flex flex-col gap-8 pb-20">

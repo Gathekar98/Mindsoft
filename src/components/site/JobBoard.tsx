@@ -1,7 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+
+/** URL-safe key for a team, used in links like /careers#roles-internships. */
+export function teamKey(team: string) {
+  return team.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+const FILTER_EVENT = "jobboard:team";
+
+/**
+ * A link that selects a team tab on the job board below and scrolls to it.
+ * Works as a plain anchor (#roles-<team>) too, so the URL can be shared.
+ */
+export function TeamFilterLink({ team, className, children }: { team: string; className?: string; children: ReactNode }) {
+  const hash = `#roles-${teamKey(team)}`;
+  return (
+    <a
+      href={hash}
+      className={className}
+      onClick={(e) => {
+        e.preventDefault();
+        history.replaceState(null, "", hash);
+        window.dispatchEvent(new CustomEvent(FILTER_EVENT, { detail: team }));
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
 export interface JobCard {
   slug: string;
@@ -52,6 +80,30 @@ export function JobBoard({ jobs, teams, initialTeam = "All" }: { jobs: JobCard[]
 
   const tabs = ["All", ...teams.filter((t) => counts[t])];
 
+  // Select a tab from the hero buttons (custom event) or from a shared link (#roles-<team>).
+  useEffect(() => {
+    const select = (name: string | undefined, scroll: boolean) => {
+      if (!name || !tabs.includes(name)) return;
+      setTeam(name);
+      setQ("");
+      if (scroll) document.getElementById("roles")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    const fromHash = (scroll: boolean) => {
+      const h = decodeURIComponent(window.location.hash.slice(1));
+      if (h.startsWith("roles-")) select(tabs.find((t) => teamKey(t) === h.slice(6)), scroll);
+    };
+    const onEvent = (e: Event) => select((e as CustomEvent<string>).detail, true);
+    const onHash = () => fromHash(true);
+    fromHash(true);
+    window.addEventListener(FILTER_EVENT, onEvent);
+    window.addEventListener("hashchange", onHash);
+    return () => {
+      window.removeEventListener(FILTER_EVENT, onEvent);
+      window.removeEventListener("hashchange", onHash);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabs.join("|")]);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
@@ -62,7 +114,11 @@ export function JobBoard({ jobs, teams, initialTeam = "All" }: { jobs: JobCard[]
               type="button"
               role="tab"
               aria-selected={team === t}
-              onClick={() => setTeam(t)}
+              onClick={() => {
+                setTeam(t);
+                // Keep the URL shareable, e.g. /careers#roles-internships
+                history.replaceState(null, "", t === "All" ? window.location.pathname : `#roles-${teamKey(t)}`);
+              }}
               className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors ${
                 team === t ? "bg-navy text-white" : "border border-line bg-white text-slate hover:border-ocean-2 hover:text-ocean"
               }`}

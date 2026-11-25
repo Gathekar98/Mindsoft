@@ -1,9 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 import { CtaBand, PageHero, SectionHead } from "./PageHero";
-import { JobBoard, type JobCard } from "./JobBoard";
+import { JobBoard, TeamFilterLink, type JobCard } from "./JobBoard";
 import { isAcceptingApplications, postedLabel, teams, type Job } from "@/content/jobs";
 import { perks } from "@/content/job-profiles";
 import { site } from "@/lib/site";
+
+// Shortcut buttons in the hero; each selects that tab on the job board.
+const quickTeams = ["Frontend", "Backend", "Full-stack", "Data & AI", "Design", "QA & Testing"];
 
 const perkIcons = [
   "M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18",
@@ -30,6 +34,8 @@ export function CareersListing({ jobs, initialTeam = "All", internships = false 
     posted: postedLabel(j.postedOn),
   }));
   const openCount = cards.filter((c) => c.open).length;
+  const teamCounts: Record<string, number> = {};
+  for (const c of cards) teamCounts[c.team] = (teamCounts[c.team] ?? 0) + 1;
 
   return (
     <>
@@ -56,10 +62,41 @@ export function CareersListing({ jobs, initialTeam = "All", internships = false 
           </div>
         }
       >
-        <div className="flex flex-wrap gap-3">
-          <a href="#roles" className="btn-primary">See open roles</a>
-          <a href={`mailto:${site.email}?subject=${encodeURIComponent("General application")}`} className="btn-outline">General application</a>
-        </div>
+        {internships ? (
+          <div className="flex flex-wrap gap-3">
+            <a href="#roles" className="btn-primary">See internships</a>
+            <Link href="/careers" className="btn-outline">All open roles</Link>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-wrap gap-3">
+              <a href="#roles" className="btn-primary">See open roles</a>
+              {teamCounts.Internships ? (
+                <TeamFilterLink team="Internships" className="btn-outline">
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2.5 9 2.5 12 0v-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Internship programs
+                  <span className="rounded-full bg-mint-soft px-2 py-0.5 text-xs font-bold text-mint-text">{teamCounts.Internships}</span>
+                </TeamFilterLink>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-2.5">
+              <span className="text-xs font-bold tracking-widest text-muted uppercase">Jump to a team</span>
+              <div className="flex flex-wrap gap-2">
+                {quickTeams.filter((t) => teamCounts[t]).map((t) => (
+                  <TeamFilterLink
+                    key={t}
+                    team={t}
+                    className="rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-semibold text-slate transition-colors hover:border-ocean-2 hover:text-ocean"
+                  >
+                    {t} <span className="ml-0.5 opacity-60">{teamCounts[t]}</span>
+                  </TeamFilterLink>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </PageHero>
 
       <section id="roles" className="container-ms flex scroll-mt-28 flex-col gap-8 py-16">

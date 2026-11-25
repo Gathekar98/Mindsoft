@@ -14,8 +14,8 @@ export const site = {
   location: "Pune, Maharashtra, India",
   // --- Contact details ---
   email: "ashwinigathekar2704@gmail.com",
-  phone: "+91 96576 77950",
-  whatsapp: "919657677950", // digits only with country code, e.g. "919800000000". Empty hides WhatsApp links.
+  phone: "+91 98343 87807",
+  whatsapp: "919834387807", // digits only with country code, e.g. "919800000000". Empty hides WhatsApp links.
   bookingUrl: "", // e.g. a Calendly link. Empty sends visitors to /quote instead.
   responseTime: "1 business day",
   social: {

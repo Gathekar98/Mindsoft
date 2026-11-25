@@ -63,11 +63,8 @@ export function Header() {
         Skip to content
       </a>
       <div className="bg-navy text-[13px] text-[#cfe3f1]">
-        <div className="container-ms flex flex-wrap justify-between gap-x-4 gap-y-1 py-2">
+        <div className="container-ms py-2">
           <span>Remote-first IT services · {site.location}</span>
-          <span className="hidden sm:inline">
-            {site.email} · {site.phone}
-          </span>
         </div>
       </div>
       <header

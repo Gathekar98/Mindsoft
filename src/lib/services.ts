@@ -534,7 +534,7 @@ export const services: Service[] = [
     tech: ["Monitoring", "Backups", "Security scanning", "Analytics"],
     faqs: [
       { q: "Can you maintain a site you didn't build?", a: "Yes. We start with an audit so we understand the code and hosting before taking over." },
-      { q: "What happens to unused hours?", a: "[CONFIRM: policy for unused monthly hours]" },
+      { q: "What happens to unused hours?", a: "Unused hours carry over to the next month only, then expire. Your monthly report shows hours used and any hours carried forward." },
     ],
   },
   {

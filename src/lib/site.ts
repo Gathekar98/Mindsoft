@@ -12,19 +12,23 @@ export const site = {
     "Mindsoft Tech Solutions is a remote-first IT services company in Pune, Maharashtra, India. We design, build and maintain websites, web applications and business software.",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/+$/, ""),
   location: "Pune, Maharashtra, India",
-  // --- Placeholders: confirm before launch ---
+  // --- Contact details ---
   email: "ashwinigathekar2704@gmail.com",
   phone: "+91 96576 77950",
   whatsapp: "919657677950", // digits only with country code, e.g. "919800000000". Empty hides WhatsApp links.
   bookingUrl: "", // e.g. a Calendly link. Empty sends visitors to /quote instead.
-  responseTime: "[CONFIRM: 1 business day]",
-  availability: "[CONFIRM: month year]",
+  responseTime: "1 business day",
   social: {
     linkedin: "",
     instagram: "",
     github: "",
   },
 } as const;
+
+/** Current month in India, e.g. "December 2026" — used by the "Now taking new projects" badge. */
+export function currentMonthLabel() {
+  return new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+}
 
 export function whatsappLink(message = "Hi Mindsoft, I'd like to discuss a project.") {
   if (!site.whatsapp) return null;

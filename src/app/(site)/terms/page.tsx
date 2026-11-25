@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <>
-      <PageHero eyebrow="Legal" title="Terms & Conditions" intro="Last updated: [CONFIRM: date]. This is a starting template; have it reviewed by a legal professional before launch." crumbs={[{ label: "Terms & Conditions" }]} />
+      <PageHero eyebrow="Legal" title="Terms & Conditions" intro="Last updated: 25 November 2026." crumbs={[{ label: "Terms & Conditions" }]} />
       <section className="container-ms max-w-[820px] pb-20">
         <div className="prose-ms">
           <h2>About these terms</h2>
@@ -36,7 +36,7 @@ export default function TermsPage() {
           <p>We work to keep the website accurate and available, but we do not guarantee it will be error-free or uninterrupted. To the extent permitted by law, we are not liable for losses arising from use of the website.</p>
 
           <h2>Governing law</h2>
-          <p>These terms are governed by the laws of India. Courts in Pune, Maharashtra have jurisdiction. [CONFIRM with legal adviser]</p>
+          <p>These terms are governed by the laws of India. Courts in Pune, Maharashtra have jurisdiction.</p>
 
           <h2>Contact</h2>
           <p>{site.email}</p>

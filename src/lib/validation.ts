@@ -23,7 +23,7 @@ export const budgetOptions = [
   "₹1,50,000 – ₹5,00,000",
   "₹5,00,000 +",
   "Not sure yet",
-] as const; // [CONFIRM: budget bands]
+] as const;
 
 export const experienceOptions = ["Fresher", "Less than 1 year", "1–2 years", "3–5 years", "6–9 years", "10+ years"] as const;
 export const noticeOptions = ["Immediately", "Within 15 days", "30 days", "60 days", "90 days or more"] as const;

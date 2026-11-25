@@ -104,7 +104,7 @@ export async function submitLead(_prev: FormState, formData: FormData): Promise<
               ? `We've received your quote request${serviceName ? ` for ${b(serviceName)}` : ""}. Our team will review the details and get back to you with questions, a suggested approach and an estimate.`
               : `We've received your message and our team will get back to you soon.`,
           ) +
-          highlight("You will hear from us", "Within a few business days") +
+          highlight("You will hear from us", `Within ${site.responseTime}`) +
           section("What you sent") +
           grid([
             ["Service", serviceName ?? "General enquiry"],

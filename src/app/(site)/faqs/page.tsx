@@ -14,7 +14,7 @@ const groups = [
   {
     t: "Payments & contracts",
     items: [
-      { q: "How do payments work?", a: "Projects are usually split into milestones, with a portion paid upfront and the rest as milestones are delivered. Exact terms are in your proposal. [CONFIRM: payment terms]" },
+      { q: "How do payments work?", a: "For most websites and smaller projects we ask for 50% upfront to start and 50% at launch. Larger projects are split into agreed milestones, so you pay as work is delivered. The exact schedule is written in your proposal before anything starts." },
       { q: "Do you sign NDAs?", a: "Yes. We're happy to sign a non-disclosure agreement before you share sensitive details." },
       { q: "What if requirements change during the project?", a: "Changes are normal. We estimate the impact on time and cost, and only proceed once you approve the change in writing." },
     ],

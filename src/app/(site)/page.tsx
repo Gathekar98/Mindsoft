@@ -70,7 +70,9 @@ export default function HomePage() {
                 alt="A team reviewing a project together on a computer screen"
                 fill
                 priority
-                sizes="(max-width: 640px) 290px, 340px"
+                quality={90}
+                // A landscape photo cropped into a tall frame renders about 1.8x wider than the frame.
+                sizes="(max-width: 640px) 640px, 780px"
                 className="object-cover object-[30%_center]"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,92,145,0)_55%,rgba(10,92,145,0.55))]" />

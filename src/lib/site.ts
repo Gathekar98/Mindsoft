@@ -4,13 +4,25 @@
  * Anything in [square brackets] is a placeholder that must be confirmed
  * before launch. Search the codebase for "[" + "CONFIRM" to find them all.
  */
+
+/** The public address of the website. Every link (emails, sitemap, canonical, sharing) uses it. */
+export const PRODUCTION_URL = "https://www.mindsofttechsolution.com";
+
+function resolveSiteUrl() {
+  // The live site always links to the main domain, never to the *.vercel.app address.
+  const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.VERCEL_ENV;
+  if (env === "production") return PRODUCTION_URL;
+  // Local development and preview deployments link to themselves.
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
+}
+
 export const site = {
   name: "Mindsoft Tech Solutions",
   shortName: "Mindsoft",
   tagline: "Websites, web apps and custom software for growing businesses.",
   description:
     "Mindsoft Tech Solutions is a remote-first IT services company in Pune, Maharashtra, India. We design, build and maintain websites, web applications and business software.",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/+$/, ""),
+  url: resolveSiteUrl(),
   location: "Pune, Maharashtra, India",
   // --- Contact details ---
   email: "ashwinigathekar2704@gmail.com",

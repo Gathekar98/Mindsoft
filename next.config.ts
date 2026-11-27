@@ -19,6 +19,18 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async redirects() {
+    // The Vercel address is not public: send anyone who opens it (old links, old emails)
+    // to the same page on the main domain.
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "mindsoft-tech.vercel.app" }],
+        destination: "https://www.mindsofttechsolution.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
